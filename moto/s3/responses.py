@@ -932,9 +932,25 @@ class ResponseObject(_TemplateEnvironmentMixin):
         return 204, {}, template.render()
 
     def _complete_multipart_body(self, body):
+        import logging
+        import sys
+
+        root = logging.getLogger()
+        root.setLevel(logging.DEBUG)
+
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        root.addHandler(ch)
+
+        logger = logging.getLogger('DEBUG')
+
         ps = minidom.parseString(body).getElementsByTagName('Part')
         prev = 0
         for p in ps:
+            logger.debug(p.getElementsByTagName(
+                'PartNumber'))
             pn = int(p.getElementsByTagName(
                 'PartNumber')[0].firstChild.wholeText)
             if pn <= prev:
